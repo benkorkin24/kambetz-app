@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>קמבץ אותה!</title>
+<meta name="description" content="עוזר אישי לניהול משימות יומיות — הוספה ידנית, צילום משימה עם זיהוי טקסט אוטומטי, ולוח משימות מתועדף.">
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#4f46e5">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="קמבץ אותה!">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Suez+One&family=Heebo:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="app">
+  <header class="appbar">
+    <button class="back-btn" id="back-btn" hidden aria-label="חזרה">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+    </button>
+    <h1 id="appbar-title">קמבץ אותה!</h1>
+    <button class="icon-btn" id="settings-btn" aria-label="הגדרות">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+    </button>
+  </header>
+
+  <main class="content">
+
+    <!-- ============ HOME ============ -->
+    <section class="view active" id="view-home">
+      <p class="hero-note">תוסיפו משימה בכתב או בתמונה — קמבץ יסדר אותה בלוח לפי דחיפות וחשיבות.</p>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-num" id="stat-active">0</div>
+          <div class="stat-label">משימות פעילות</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="stat-urgent">0</div>
+          <div class="stat-label">דחוף ב-24 שעות</div>
+        </div>
+      </div>
+
+      <div class="advisor-card" id="advisor-card">
+        <div class="adv-icon stamp-ring">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4z"/></svg>
+        </div>
+        <div>
+          <div class="adv-title" id="adv-title">בואו נתחיל</div>
+          <div class="adv-text" id="adv-text">טוען המלצה…</div>
+        </div>
+      </div>
+
+      <div class="tile-drawer">
+        <button class="tile" id="tile-add">
+          <span class="tile-icon stamp-ring">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          </span>
+          <span class="tile-text">
+            <div class="tile-title">הוספת משימה</div>
+            <div class="tile-sub">כתבו משימה, תאריך וחשיבות</div>
+          </span>
+          <span class="tile-arrow">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </span>
+        </button>
+
+        <button class="tile" id="tile-camera">
+          <span class="tile-icon stamp-ring">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </span>
+          <span class="tile-text">
+            <div class="tile-title">צילום משימה</div>
+            <div class="tile-sub">צלמו פתק — נזהה את הטקסט אוטומטית</div>
+          </span>
+          <span class="tile-arrow">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </span>
+        </button>
+
+        <button class="tile" id="tile-board">
+          <span class="tile-icon stamp-ring">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          </span>
+          <span class="tile-text">
+            <div class="tile-title">מעקב משימות</div>
+            <div class="tile-sub">הלוח המתועדף שלכם</div>
+          </span>
+          <span class="tile-badge" id="tile-board-badge" hidden>0</span>
+          <span class="tile-arrow">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ============ ADD (MANUAL) ============ -->
+    <section class="view" id="view-add">
+      <div class="card">
+        <div class="field">
+          <label for="add-text">מה המשימה?</label>
+          <textarea id="add-text" placeholder="לדוגמה: להתקשר לרופא שיניים"></textarea>
+        </div>
+        <div class="field">
+          <label for="add-due">מה מועד הביצוע?</label>
+          <input type="datetime-local" id="add-due">
+        </div>
+        <div class="field">
+          <label>מה החשיבות? <span id="add-imp-label">(5/10)</span></label>
+          <div class="importance-picker">
+            <input type="range" min="1" max="10" value="5" id="add-importance">
+            <span class="importance-chip" id="add-imp-chip">5</span>
+          </div>
+          <div class="importance-legend">
+            <span class="leg-chip low">1–3 נמוכה</span>
+            <span class="leg-chip mid">4–6 בינונית</span>
+            <span class="leg-chip high">7–10 גבוהה</span>
+          </div>
+        </div>
+      </div>
+      <button class="btn-primary" id="add-save">שמרו משימה</button>
+      <button class="btn-ghost" id="add-cancel">ביטול</button>
+    </section>
+
+    <!-- ============ CAMERA ============ -->
+    <section class="view" id="view-camera">
+
+      <div class="camera-stage" data-stage="capture" id="cam-stage-capture">
+        <div class="cam-illustration stamp-ring">
+          <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </div>
+        <p>צלמו פתק, מחברת או לוח — נזהה את הטקסט הכתוב ונהפוך אותו למשימה. עובד הכי טוב עם כתב ברור ותאורה טובה.</p>
+        <button class="btn-primary" id="cam-take">📷 צלמו עכשיו</button>
+        <button class="btn-ghost" id="cam-pick" style="margin-top:0">בחרו תמונה מהגלריה</button>
+      </div>
+
+      <div class="camera-stage" data-stage="analyzing" id="cam-stage-analyzing" hidden>
+        <div class="spinner"></div>
+        <p id="cam-progress-text">מנתח את התמונה…</p>
+      </div>
+
+      <div id="cam-stage-confirm" hidden>
+        <img id="cam-preview" class="photo-preview" alt="התמונה שצולמה">
+        <div class="card">
+          <div class="field">
+            <label for="cam-text">זיהינו את הטקסט הבא — אפשר לתקן:</label>
+            <textarea id="cam-text"></textarea>
+          </div>
+          <div class="field">
+            <label for="cam-due">מה מועד הביצוע?</label>
+            <input type="datetime-local" id="cam-due">
+          </div>
+          <div class="field">
+            <label>מה החשיבות? <span id="cam-imp-label">(5/10)</span></label>
+            <div class="importance-picker">
+              <input type="range" min="1" max="10" value="5" id="cam-importance">
+              <span class="importance-chip" id="cam-imp-chip">5</span>
+            </div>
+            <div class="importance-legend">
+              <span class="leg-chip low">1–3 נמוכה</span>
+              <span class="leg-chip mid">4–6 בינונית</span>
+              <span class="leg-chip high">7–10 גבוהה</span>
+            </div>
+          </div>
+        </div>
+        <button class="btn-primary" id="cam-save">שמרו משימה</button>
+        <button class="btn-ghost" id="cam-retake">צלמו שוב</button>
+      </div>
+
+    </section>
+
+    <!-- ============ BOARD ============ -->
+    <section class="view" id="view-board">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="active" id="tab-active">פעילות</button>
+        <button class="tab-btn" data-tab="done" id="tab-done">הושלמו</button>
+      </div>
+      <div class="task-list" id="task-list"></div>
+      <div class="empty-state" id="board-empty" hidden>
+        <div class="es-icon stamp-ring">
+          <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        </div>
+        <p id="board-empty-text">אין עדיין משימות פה — לחצו על "הוספת משימה" בעמוד הבית.</p>
+      </div>
+    </section>
+
+    <!-- ============ SETTINGS ============ -->
+    <section class="view" id="view-settings">
+      <div class="card">
+        <div class="field" style="margin-bottom:6px;">
+          <label>התראות תזכורת</label>
+          <div class="importance-hint" style="margin-top:0;margin-bottom:10px;">
+            כשמשימה נשארת פחות מ-24 שעות למועד הביצוע, נשלח התראה. פועל כשהאפליקציה פתוחה או ברקע — לא כשהיא סגורה לגמרי (זה דורש שרת, שלא קיים בגרסה הזו).
+          </div>
+        </div>
+        <button class="btn-primary" id="notif-enable">אפשרו התראות</button>
+        <p id="notif-status" style="text-align:center;margin-top:10px;font-size:.8rem;color:var(--ink-faint);"></p>
+      </div>
+
+      <div class="card">
+        <div class="field" style="margin-bottom:6px;">
+          <label>איפוס נתונים</label>
+          <div class="importance-hint" style="margin-top:0;margin-bottom:10px;">
+            מוחק את כל המשימות (פעילות והושלמו) מהמכשיר הזה. פעולה בלתי הפיכה.
+          </div>
+        </div>
+        <button class="btn-primary danger" id="clear-data">מחקו את כל המשימות</button>
+      </div>
+
+      <p style="text-align:center;font-size:.78rem;color:var(--ink-faint);margin-top:10px;">
+        קמבץ אותה! · כל הנתונים נשמרים רק על המכשיר שלכם.
+      </p>
+    </section>
+
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="install-banner" id="install-banner" hidden>
+  <div class="ib-icon stamp-ring">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13"/><path d="M7 12l5 5 5-5"/><path d="M4 19h16"/></svg>
+  </div>
+  <div class="ib-text">
+    <div class="ib-title" id="ib-title">התקינו את קמבץ אותה! כאפליקציה</div>
+    <div class="ib-sub" id="ib-sub">גישה מהירה ממסך הבית, גם ללא אינטרנט</div>
+  </div>
+  <div class="ib-actions">
+    <button class="ib-install" id="ib-install" hidden>התקינו</button>
+    <button class="ib-close" id="ib-close" aria-label="סגירה">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
+    </button>
+  </div>
+</div>
+
+<input type="file" accept="image/*" capture="environment" class="hidden-file" id="file-camera">
+<input type="file" accept="image/*" class="hidden-file" id="file-gallery">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.0.5/tesseract.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
