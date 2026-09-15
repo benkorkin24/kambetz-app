@@ -207,9 +207,48 @@ function mapOcrStatus(status){
 function cleanOcrText(raw){
   return raw.replace(/\r/g,"").split("\n").map(function(l){ return l.trim(); }).filter(Boolean).join("\n").trim();
 }
+function preprocessForOcr(file){
+  return new Promise(function(resolve, reject){
+    var url = URL.createObjectURL(file);
+    var img = new Image();
+    img.onload = function(){
+      var longSide = Math.max(img.width, img.height);
+      var scale = longSide > 1800 ? 1800 / longSide : (longSide < 900 ? 900 / longSide : 1);
+      var w = Math.max(1, Math.round(img.width * scale));
+      var h = Math.max(1, Math.round(img.height * scale));
+      var canvas = document.createElement("canvas");
+      canvas.width = w; canvas.height = h;
+      var ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, w, h);
+      URL.revokeObjectURL(url);
+      try{
+        var imgData = ctx.getImageData(0, 0, w, h);
+        var d = imgData.data;
+        var n = w * h;
+        var gray = new Float32Array(n);
+        var min = 255, max = 0;
+        for (var i = 0, p = 0; p < n; i += 4, p++){
+          var g = 0.299*d[i] + 0.587*d[i+1] + 0.114*d[i+2];
+          gray[p] = g;
+          if (g < min) min = g;
+          if (g > max) max = g;
+        }
+        var range = Math.max(1, max - min);
+        for (var j = 0, q = 0; q < n; j += 4, q++){
+          var v = (gray[q] - min) * (255 / range);
+          d[j] = d[j+1] = d[j+2] = v;
+        }
+        ctx.putImageData(imgData, 0, 0);
+      }catch(e){ /* canvas read blocked or unsupported — fall back to plain resized image */ }
+      resolve(canvas);
+    };
+    img.onerror = function(){ URL.revokeObjectURL(url); reject(new Error("image-load-failed")); };
+    img.src = url;
+  });
+}
 function runOcr(file, previewDataUrl){
   showCamStage("analyzing");
-  $("cam-progress-text").textContent = "טוען מנוע זיהוי…";
+  $("cam-progress-text").textContent = "מעבד את התמונה…";
 
   if (typeof Tesseract === "undefined"){
     showToast("שירות זיהוי הטקסט לא נטען — בדקו חיבור לאינטרנט ונסו שוב");
@@ -217,13 +256,15 @@ function runOcr(file, previewDataUrl){
     return;
   }
 
-  Tesseract.recognize(file, "heb+eng", {
-    logger: function(m){
-      if (m && m.status){
-        var pct = (typeof m.progress === "number") ? " " + Math.round(m.progress*100) + "%" : "";
-        $("cam-progress-text").textContent = mapOcrStatus(m.status) + pct;
+  preprocessForOcr(file).catch(function(){ return file; }).then(function(source){
+    return Tesseract.recognize(source, "heb+eng", {
+      logger: function(m){
+        if (m && m.status){
+          var pct = (typeof m.progress === "number") ? " " + Math.round(m.progress*100) + "%" : "";
+          $("cam-progress-text").textContent = mapOcrStatus(m.status) + pct;
+        }
       }
-    }
+    });
   }).then(function(result){
     var text = cleanOcrText((result && result.data && result.data.text) || "");
     $("cam-preview").src = previewDataUrl;
